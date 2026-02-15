@@ -39,6 +39,10 @@ CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_DB
 
+# Flask-AppBuilder 4.8 defaults to "scrypt", which is unsupported in our
+# current Werkzeug pin (2.2.x). Use a compatible method for user creation/login.
+FAB_PASSWORD_HASH_METHOD = "pbkdf2:sha256"
+
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
 

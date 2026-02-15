@@ -8,3 +8,4 @@ xlwt==1.3.0
 flask==2.2.3  
 flask_sqlalchemy
 Flask-AppBuilder
+marshmallow<4

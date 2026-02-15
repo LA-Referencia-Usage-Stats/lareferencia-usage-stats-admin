@@ -6,3 +6,5 @@ app.db
 env
 venv
 *.sublime*
+.DS_Store
+.DS_Store

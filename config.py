@@ -13,7 +13,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SECRET_KEY = "789123789123478934dhjkasdhjk"
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
+# Allow overriding from environment for containerized/shared deployments.
+SQLALCHEMY_DATABASE_URI = os.environ.get(
+    "SQLALCHEMY_DATABASE_URI",
+    "sqlite:///" + os.path.join(basedir, "app.db"),
+)
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'
 
@@ -38,6 +42,10 @@ CSRF_ENABLED = True
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_DB
+
+# Flask-AppBuilder 4.8 defaults to "scrypt", which is unsupported in our
+# current Werkzeug pin (2.2.x). Use a compatible method for user creation/login.
+FAB_PASSWORD_HASH_METHOD = "pbkdf2:sha256"
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
