@@ -1,0 +1,6 @@
+{% extends "appbuilder/general/model/add.html" %}
+
+{% block add_tail_js %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/source_mapping_ui.js') }}"></script>
+{% endblock %}

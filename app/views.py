@@ -16,6 +16,8 @@ class CountryView(ModelView):
  
 class SourceView(ModelView):
     datamodel = SQLAInterface(Source)
+    edit_template = "source_edit.html"
+    add_template = "source_add.html"
 
     IDENTIFIER_MAP_TYPES = (
         (0, "0 - Standard normalization"),
@@ -111,6 +113,32 @@ class SourceView(ModelView):
         mode = SourceView._coerce_mode(field.data)
         if mode not in SourceView.IDENTIFIER_MAP_TYPE_LABELS:
             raise ValidationError("Invalid Identifier Mapping Mode. Allowed values: 0, 1, 2.")
+
+        regex_value = SourceView._trim_or_none(form.identifier_map_regex.data)
+        replace_value = SourceView._trim_or_none(form.identifier_map_replace.data)
+        filename_value = SourceView._trim_or_none(form.identifier_map_filename.data)
+
+        if mode == 1:
+            if not regex_value:
+                raise ValidationError("Regex Pattern is required when mode is 'Regex replace'.")
+            if not replace_value:
+                raise ValidationError("Regex Replacement is required when mode is 'Regex replace'.")
+            try:
+                re.compile(regex_value)
+            except re.error as exc:
+                raise ValidationError("Invalid regex pattern: %s" % exc)
+            try:
+                re.compile(regex_value).sub(replace_value, "oai:test:123/456")
+            except re.error as exc:
+                raise ValidationError("Invalid replacement expression: %s" % exc)
+
+        if mode == 2:
+            if not filename_value:
+                raise ValidationError("Mapping File Path is required when mode is 'Mapping from file'.")
+            if not os.path.isfile(filename_value):
+                raise ValidationError(
+                    "Mapping file does not exist in the container path: %s" % filename_value
+                )
 
     def _validate_regex_field(form, field):
         mode = SourceView._coerce_mode(form.identifier_map_type.data)
