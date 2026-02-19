@@ -1,0 +1,3 @@
+[USAGE_STATS_DB]
+SQLALCHEMY_DATABASE_URI = mysql+pymysql://user:passwd@database_url:3306/lareferencia-usage-stats-db?charset=utf8mb4
+
