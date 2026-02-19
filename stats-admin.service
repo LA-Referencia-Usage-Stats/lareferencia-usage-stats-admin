@@ -1,0 +1,16 @@
+[Unit]
+Description=LA Referencia Usage Stats Admin
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/opt/lareferencia-usage-stats/lareferencia-usage-stats-admin
+EnvironmentFile=/etc/sysconfig/stats-admin
+ExecStart=/usr/bin/python3 -m gunicorn --bind 0.0.0.0:5000 --workers 2 --threads 4 --timeout 120 app:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

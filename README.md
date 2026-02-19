@@ -64,6 +64,27 @@ Servidor por defecto: `http://0.0.0.0:5000`.
 - También puede leerse desde `config.ini` (`[USAGE_STATS_DB] SQLALCHEMY_DATABASE_URI`) si defines `STATS_ADMIN_CONFIG_INI` o `CONFIG_FILE_PATH`.
 - En producción debería apuntar a la DB compartida de estadísticas para que todos los componentes vean el mismo catálogo de fuentes.
 
+## Deploy como systemd
+
+Incluye:
+
+- `stats-admin.service` (plantilla)
+- `install_systemd_service.sh` (instalador idempotente)
+
+Instalación típica en servidor:
+
+```bash
+cd /ruta/lareferencia-usage-stats-admin
+./install_systemd_service.sh
+```
+
+El script:
+
+- usa el `SECRET_KEY` actual de `config.py` (puedes sobreescribir con `SECRET_KEY_VALUE=...`),
+- crea `/etc/sysconfig/stats-admin`,
+- instala `/etc/systemd/system/stats-admin.service`,
+- recarga systemd, habilita y reinicia el servicio.
+
 ## Notas operativas
 
 - `app/views.py` ejecuta `db.create_all()` al cargar módulo.
