@@ -43,7 +43,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Servidor por defecto: `http://0.0.0.0:8080`.
+Servidor por defecto: `http://0.0.0.0:5000`.
 
 ## Integración con otros módulos
 
