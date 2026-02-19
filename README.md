@@ -43,6 +43,12 @@ pip install -r requirements.txt
 python run.py
 ```
 
+Chequeo rápido de conexión a BD:
+
+```bash
+python check_db.py
+```
+
 Servidor por defecto: `http://0.0.0.0:5000`.
 
 ## Integración con otros módulos
