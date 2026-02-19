@@ -31,28 +31,70 @@ fi
 extract_secret_key() {
   "${PYTHON_BIN}" - "${APP_DIR}/config.py" <<'PY'
 import ast
+import re
 import sys
 
 path = sys.argv[1]
 with open(path, "r", encoding="utf-8") as f:
-    tree = ast.parse(f.read(), filename=path)
+    source = f.read()
+
+# 1) Fast-path: literal assignment via regex.
+match = re.search(r'^\s*SECRET_KEY\s*=\s*["\']([^"\']+)["\']\s*$', source, flags=re.MULTILINE)
+if match:
+    print(match.group(1))
+    raise SystemExit(0)
+
+tree = ast.parse(source, filename=path)
+
+def is_secret_target(node):
+    return isinstance(node, ast.Name) and node.id == "SECRET_KEY"
+
+def extract_default_from_call(node):
+    # Handles patterns like os.environ.get("SECRET_KEY", "value")
+    if not isinstance(node, ast.Call):
+        return None
+    if len(node.args) < 2:
+        return None
+    default_arg = node.args[1]
+    if isinstance(default_arg, ast.Constant) and isinstance(default_arg.value, str):
+        return default_arg.value
+    return None
 
 for node in tree.body:
+    value = None
+    target = None
+
     if isinstance(node, ast.Assign):
-        for target in node.targets:
-            if isinstance(target, ast.Name) and target.id == "SECRET_KEY":
-                if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
-                    print(node.value.value)
-                    raise SystemExit(0)
+        if node.targets:
+            target = node.targets[0]
+        value = node.value
+    elif isinstance(node, ast.AnnAssign):
+        target = node.target
+        value = node.value
+
+    if not is_secret_target(target) or value is None:
+        continue
+
+    if isinstance(value, ast.Constant) and isinstance(value.value, str) and value.value:
+        print(value.value)
+        raise SystemExit(0)
+
+    default_value = extract_default_from_call(value)
+    if isinstance(default_value, str) and default_value:
+        print(default_value)
+        raise SystemExit(0)
 
 print("")
 PY
 }
 
-SECRET_KEY_VALUE="${SECRET_KEY_VALUE:-$(extract_secret_key)}"
+SECRET_KEY_VALUE="${SECRET_KEY_VALUE:-${SECRET_KEY:-}}"
+if [[ -z "${SECRET_KEY_VALUE}" ]]; then
+  SECRET_KEY_VALUE="$(extract_secret_key)"
+fi
 if [[ -z "${SECRET_KEY_VALUE}" ]]; then
   echo "Could not read SECRET_KEY from ${APP_DIR}/config.py"
-  echo "Set SECRET_KEY_VALUE explicitly and rerun."
+  echo "Set SECRET_KEY_VALUE explicitly (or export SECRET_KEY) and rerun."
   exit 1
 fi
 
