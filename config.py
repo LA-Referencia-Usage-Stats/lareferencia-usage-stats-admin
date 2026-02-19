@@ -1,4 +1,6 @@
 import os
+import configparser
+import logging
 from flask_appbuilder.security.manager import (
     AUTH_OID,
     AUTH_REMOTE_USER,
@@ -8,6 +10,38 @@ from flask_appbuilder.security.manager import (
 )
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+logger = logging.getLogger(__name__)
+
+
+def _read_db_uri_from_ini():
+    ini_candidates = []
+
+    env_ini_path = os.environ.get("STATS_ADMIN_CONFIG_INI") or os.environ.get("CONFIG_FILE_PATH")
+    if env_ini_path:
+        ini_candidates.append(env_ini_path)
+
+    ini_candidates.append(os.path.join(basedir, "config.ini"))
+    ini_candidates.append(os.path.join(os.getcwd(), "config.ini"))
+
+    for ini_path in ini_candidates:
+        if not ini_path:
+            continue
+        if not os.path.isfile(ini_path):
+            continue
+
+        parser = configparser.ConfigParser()
+        try:
+            parser.read(ini_path)
+        except Exception as exc:
+            logger.warning("Error reading config ini at %s: %s", ini_path, exc)
+            continue
+
+        if parser.has_section("USAGE_STATS_DB") and parser.has_option(
+            "USAGE_STATS_DB", "SQLALCHEMY_DATABASE_URI"
+        ):
+            return parser.get("USAGE_STATS_DB", "SQLALCHEMY_DATABASE_URI")
+
+    return None
 
 # Your App secret key
 SECRET_KEY = "789123789123478934dhjkasdhjk"
@@ -16,7 +50,7 @@ SECRET_KEY = "789123789123478934dhjkasdhjk"
 # Allow overriding from environment for containerized/shared deployments.
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     "SQLALCHEMY_DATABASE_URI",
-    "sqlite:///" + os.path.join(basedir, "app.db"),
+    _read_db_uri_from_ini() or ("sqlite:///" + os.path.join(basedir, "app.db")),
 )
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'

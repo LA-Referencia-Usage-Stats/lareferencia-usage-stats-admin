@@ -55,6 +55,7 @@ Servidor por defecto: `http://0.0.0.0:5000`.
 ## Configuración relevante
 
 - `SQLALCHEMY_DATABASE_URI` en `config.py` apunta por defecto a `sqlite:///app.db`.
+- También puede leerse desde `config.ini` (`[USAGE_STATS_DB] SQLALCHEMY_DATABASE_URI`) si defines `STATS_ADMIN_CONFIG_INI` o `CONFIG_FILE_PATH`.
 - En producción debería apuntar a la DB compartida de estadísticas para que todos los componentes vean el mismo catálogo de fuentes.
 
 ## Notas operativas
