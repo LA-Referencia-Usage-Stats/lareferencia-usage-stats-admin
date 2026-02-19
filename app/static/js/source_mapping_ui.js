@@ -52,12 +52,12 @@
       var tr = document.createElement("tr");
       tr.id = "identifier-map-preview-root";
       tr.innerHTML =
-        '<td><label for="identifier_preview_input">Regex Preview</label></td>' +
+        '<td><label for="identifier_preview_input">Vista previa Regex</label></td>' +
         '<td>' +
         '<div class="well well-sm" style="margin-bottom: 0;">' +
-        '<input id="identifier_preview_input" class="form-control" type="text" placeholder="Sample identifier (e.g. oai:sedici.unlp.edu.ar:10915/108063)">' +
-        '<span class="help-block" style="margin-top: 8px;">Test current Regex Pattern/Replacement. Backrefs using \\1, \\2 are supported in preview.</span>' +
-        '<div id="identifier_preview_result" class="alert alert-info" style="margin-top: 8px; margin-bottom: 0;">Waiting for input.</div>' +
+        '<input id="identifier_preview_input" class="form-control" type="text" placeholder="Identificador de ejemplo (ej. oai:sedici.unlp.edu.ar:10915/108063)">' +
+        '<span class="help-block" style="margin-top: 8px;">Prueba el Patron/Reemplazo regex actual. Se soportan referencias \\1, \\2 en la vista previa.</span>' +
+        '<div id="identifier_preview_result" class="alert alert-info" style="margin-top: 8px; margin-bottom: 0;">Esperando entrada.</div>' +
         "</div>" +
         "</td>";
       anchorContainer.insertAdjacentElement("afterend", tr);
@@ -68,11 +68,11 @@
     wrapper.id = "identifier-map-preview-root";
     wrapper.className = "form-group";
     wrapper.innerHTML =
-      '<label for="identifier_preview_input" class="control-label">Regex Preview</label>' +
+      '<label for="identifier_preview_input" class="control-label">Vista previa Regex</label>' +
       '<div class="well well-sm">' +
-      '<input id="identifier_preview_input" class="form-control" type="text" placeholder="Sample identifier (e.g. oai:sedici.unlp.edu.ar:10915/108063)">' +
-      '<span class="help-block" style="margin-top: 8px;">Test current Regex Pattern/Replacement. Backrefs using \\1, \\2 are supported in preview.</span>' +
-      '<div id="identifier_preview_result" class="alert alert-info" style="margin-top: 8px; margin-bottom: 0;">Waiting for input.</div>' +
+      '<input id="identifier_preview_input" class="form-control" type="text" placeholder="Identificador de ejemplo (ej. oai:sedici.unlp.edu.ar:10915/108063)">' +
+      '<span class="help-block" style="margin-top: 8px;">Prueba el Patron/Reemplazo regex actual. Se soportan referencias \\1, \\2 en la vista previa.</span>' +
+      '<div id="identifier_preview_result" class="alert alert-info" style="margin-top: 8px; margin-bottom: 0;">Esperando entrada.</div>' +
       "</div>";
     anchorContainer.insertAdjacentElement("afterend", wrapper);
     return wrapper;
@@ -118,12 +118,12 @@
       var replacement = replaceField.value || "";
 
       if (!sample) {
-        setPreviewMessage(previewResult, "Enter a sample identifier to preview.", "alert-info");
+        setPreviewMessage(previewResult, "Ingresa un identificador de ejemplo para previsualizar.", "alert-info");
         return;
       }
 
       if (!regexPattern) {
-        setPreviewMessage(previewResult, "Regex Pattern is empty.", "alert-warning");
+        setPreviewMessage(previewResult, "El Patron Regex esta vacio.", "alert-warning");
         return;
       }
 
@@ -131,7 +131,7 @@
       try {
         regex = new RegExp(regexPattern);
       } catch (error) {
-        setPreviewMessage(previewResult, "Invalid regex pattern: " + error.message, "alert-danger");
+        setPreviewMessage(previewResult, "Patron regex invalido: " + error.message, "alert-danger");
         return;
       }
 
@@ -139,12 +139,12 @@
         var jsReplacement = convertPythonReplacementToJs(replacement);
         var transformed = sample.replace(regex, jsReplacement);
         if (transformed === sample) {
-          setPreviewMessage(previewResult, "No change: " + transformed, "alert-warning");
+          setPreviewMessage(previewResult, "Sin cambios: " + transformed, "alert-warning");
           return;
         }
-        setPreviewMessage(previewResult, "Result: " + transformed, "alert-success");
+        setPreviewMessage(previewResult, "Resultado: " + transformed, "alert-success");
       } catch (error) {
-        setPreviewMessage(previewResult, "Invalid replacement expression: " + error.message, "alert-danger");
+        setPreviewMessage(previewResult, "Expresion de reemplazo invalida: " + error.message, "alert-danger");
       }
     }
 

@@ -106,7 +106,7 @@ FAB_PASSWORD_HASH_METHOD = "pbkdf2:sha256"
 # Babel config for translations
 # ---------------------------------------------------
 # Setup default language
-BABEL_DEFAULT_LOCALE = "en"
+BABEL_DEFAULT_LOCALE = "es"
 # Your application default translation path
 BABEL_DEFAULT_FOLDER = "translations"
 # The allowed translation for you app
